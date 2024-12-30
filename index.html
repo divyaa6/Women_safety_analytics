@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SOS Hand Gesture Detection</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: rgb(217, 46, 75);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        color: #ff5757;
+        margin-bottom: 20px;
+      }
+
+      #main-container {
+        background-color: #1e1e1e;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(255, 87, 87, 0.5);
+        padding: 20px;
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+      }
+
+      #input-options {
+        margin-top: 20px;
+      }
+
+      #input-options label {
+        font-size: 0.9rem;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
+      .button {
+        background-color: #ff5757;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background-color 0.3s;
+      }
+
+      .button:hover {
+        background-color: #ff1e1e;
+      }
+
+      #webcam-container {
+        margin-top: 20px;
+        display: none;
+      }
+
+      #webcam-container img {
+        max-width: 100%;
+        border-radius: 10px;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .file-input-label {
+        display: inline-block;
+        margin-bottom: 10px;
+        margin-top: 15px;
+      }
+
+      .browse-button {
+        background: rgba(255, 87, 87, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 5px 12px;
+        font-size: 0.8rem;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        opacity: 0.9;
+      }
+
+      .browse-button:hover {
+        background: rgba(255, 87, 87, 0.3);
+        opacity: 1;
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .inline-align {
+        display: inline-block;
+        margin-right: 20px;
+      }
+
+      .horizontal-center {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 10px;
+      }
+
+      input[type="radio"] {
+        margin-right: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main-container">
+      <h1>SOS Hand Gesture Detection</h1>
+      <div id="input-options">
+        <form id="monitoring-form" method="POST" enctype="multipart/form-data">
+          <div class="horizontal-center">
+            <div class="inline-align">
+              <input type="radio" id="webcam" name="source" value="webcam" />
+              <label for="webcam">Webcam</label>
+            </div>
+
+            <div class="inline-align">
+              <input
+                type="radio"
+                id="upload-video"
+                name="source"
+                value="video"
+                checked
+              />
+              <label for="upload-video">Upload Video</label>
+            </div>
+          </div>
+
+          <div class="file-input-label">
+            <label for="file-upload" class="browse-button">Browse Files</label>
+            <input type="file" id="file-upload" name="file" />
+          </div>
+
+          <div>
+            <button class="button" type="button" id="start-button">
+              Start Monitoring
+            </button>
+            <button
+              class="button"
+              type="button"
+              id="stop-button"
+              style="display: none"
+            >
+              Stop Monitoring
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div id="webcam-container">
+        <img src="{{ url_for('video_feed') }}" alt="Video Feed" />
+      </div>
+    </div>
+
+    <script>
+      const startButton = document.getElementById("start-button");
+      const stopButton = document.getElementById("stop-button");
+      const webcamContainer = document.getElementById("webcam-container");
+      const form = document.getElementById("monitoring-form");
+      const fileUpload = document.getElementById("file-upload");
+
+      webcamContainer.style.display = "none";
+
+      startButton.addEventListener("click", function () {
+        const selectedSource = document.querySelector(
+          'input[name="source"]:checked'
+        ).value;
+
+        if (selectedSource === "webcam") {
+          webcamContainer.style.display = "block";
+          alert("Starting Webcam Monitoring...");
+        } else if (selectedSource === "video") {
+          if (fileUpload.files.length > 0) {
+            alert("Uploading and Analyzing Video...");
+          } else {
+            alert("Please upload a video file.");
+            return;
+          }
+        }
+
+        startButton.disabled = true;
+        stopButton.style.display = "block";
+      });
+
+      stopButton.addEventListener("click", function () {
+        alert("Monitoring Stopped");
+        webcamContainer.style.display = "none";
+
+        startButton.disabled = false;
+        stopButton.style.display = "none";
+      });
+    </script>
+  </body>
+</html>
